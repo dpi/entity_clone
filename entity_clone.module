@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file
+ * Contains entity_clone.module.
+ */
+
+use Drupal\Core\Entity\Entity;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function entity_clone_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+  // Main module help for the entity_clone module.
+    case 'help.page.entity_clone':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides library for Clone Entity.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function entity_clone_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  foreach ($entity_types as &$entity_type) {
+    if (!$entity_type->getHandlerClass('entity_clone') && $entity_type instanceof \Drupal\Core\Entity\ContentEntityTypeInterface) {
+      $entity_type->setHandlerClass('entity_clone', '\Drupal\entity_clone\ContentEntityCloneBase');
+//      $entity_type->setHandlerClass('entity_clone_form', '\Drupal\entity_clone\ContentEntityCloneFormBase');
+    }
+    else if (!$entity_type->getHandlerClass('entity_clone') && $entity_type instanceof \Drupal\Core\Config\Entity\ConfigEntityTypeInterface) {
+      $entity_type->setHandlerClass('entity_clone', '\Drupal\entity_clone\ConfigEntityCloneBase');
+      $entity_type->setHandlerClass('entity_clone_form', '\Drupal\entity_clone\ConfigEntityCloneFormBase');
+    }
+  }
+}
+
+/**
+ * Declares entity operations.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity on which the linked operations will be performed.
+ *
+ * @return array
+ *   An operations array as returned by
+ *   EntityListBuilderInterface::getOperations().
+ *
+ * @see \Drupal\Core\Entity\EntityListBuilderInterface::getOperations()
+ */
+function entity_clone_entity_operation(EntityInterface $entity) {
+  if ($entity->hasLinkTemplate('clone-form')) {
+    return [
+      'clone' => [
+        'title' => t('Clone'),
+        'weight' => 50,
+        'url' => $entity->toUrl('clone-form'),
+      ]
+    ];
+  }
+
+  return [];
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * @param \Drupal\Core\Entity\EntityTypeInterface[] $entity_types
+ */
+function entity_clone_entity_type_alter(array &$entity_types) {
+  foreach ($entity_types as $entity_type_id => $entity_type) {
+    $entity_type->setLinkTemplate('clone-form', "/entity_clone/$entity_type_id/{{$entity_type_id}}");
+  }
+}
