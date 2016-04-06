@@ -68,7 +68,6 @@ class EntityClonePermissions implements ContainerInjectionInterface {
       ]);
     }
 
-    dsm($permissions);
     return $permissions;
   }
 
