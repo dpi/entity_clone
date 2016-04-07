@@ -32,7 +32,6 @@ class EntityClonePermissions implements ContainerInjectionInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
    *   The entity type manager.
-   *
    * @param \Drupal\Core\StringTranslation\TranslationManager $string_translation
    *   The string translation manager.
    */

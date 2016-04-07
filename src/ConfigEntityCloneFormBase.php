@@ -11,7 +11,7 @@ use Drupal\Core\StringTranslation\TranslationManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class ConfigEntityCloneFormBase
+ * Class ConfigEntityCloneFormBase.
  */
 class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFormInterface {
 
@@ -29,7 +29,6 @@ class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFo
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
    *   The entity type manager.
-   *
    * @param \Drupal\Core\StringTranslation\TranslationManager $translation_manager
    *   The string translation manager.
    */

@@ -13,12 +13,12 @@ interface EntityCloneInterface {
    * Clone an entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity
-   *
+   *   The entity.
    * @param array $properties
    *   All new properties to replace old.
    *
    * @return \Drupal\Core\Entity\EntityInterface
+   *   The new saved entity.
    */
   public function cloneEntity(EntityInterface $entity, $properties = []);
 

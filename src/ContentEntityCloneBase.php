@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityTypeManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class ContentEntityCloneBase
+ * Class ContentEntityCloneBase.
  */
 class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInterface {
 
@@ -32,8 +32,7 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
    *   The entity type manager.
-   *
-   * @param $entity_type_id
+   * @param string $entity_type_id
    *   The entity type ID.
    */
   public function __construct(EntityTypeManager $entity_type_manager, $entity_type_id) {

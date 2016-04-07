@@ -16,21 +16,29 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EntityCloneForm extends FormBase {
 
   /**
+   * The entity type manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManager
    */
   protected $entityTypeManager;
 
   /**
+   * The entity ready to clone.
+   *
    * @var \Drupal\Core\Entity\EntityInterface
    */
   protected $entity;
 
   /**
+   * The entity type définition.
+   *
    * @var \Drupal\Core\Entity\EntityTypeInterface
    */
   protected $entityTypeDefinition;
 
   /**
+   * The string translation manager.
+   *
    * @var \Drupal\Core\StringTranslation\TranslationManager
    */
   protected $stringTranslationManager;
@@ -40,10 +48,8 @@ class EntityCloneForm extends FormBase {
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
    *   The entity type manager.
-   *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The route match service.
-   *
    * @param \Drupal\Core\StringTranslation\TranslationManager $string_translation
    *   The string translation manager.
    *

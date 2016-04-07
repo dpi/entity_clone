@@ -17,6 +17,7 @@ interface EntityCloneFormInterface {
    *   The entity.
    *
    * @return array
+   *   The form elements.
    */
   public function formElement(EntityInterface $entity);
 
@@ -26,7 +27,8 @@ interface EntityCloneFormInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    *
-   * @return mixed
+   * @return array
+   *   An array containing all new values.
    */
   public function getNewValues(FormStateInterface $form_state);
 
