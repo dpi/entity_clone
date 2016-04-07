@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_clone\Form\EntityCloneForm.
- */
-
 namespace Drupal\entity_clone\Form;
 
 use Drupal\Core\Entity\EntityTypeManager;
@@ -44,8 +39,14 @@ class EntityCloneForm extends FormBase {
    * Constructs a new Entity Clone form.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   *   The entity type manager.
+   *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match service.
+   *
    * @param \Drupal\Core\StringTranslation\TranslationManager $string_translation
+   *   The string translation manager.
+   *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function __construct(EntityTypeManager $entity_type_manager, RouteMatchInterface $route_match, TranslationManager $string_translation) {

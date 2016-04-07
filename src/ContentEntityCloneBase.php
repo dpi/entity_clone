@@ -2,13 +2,15 @@
 
 namespace Drupal\entity_clone;
 
-
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class ContentEntityCloneBase
+ */
 class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInterface {
 
   /**
@@ -25,6 +27,15 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
    */
   protected $entityTypeId;
 
+  /**
+   * Constructs a new ContentEntityCloneBase.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   *   The entity type manager.
+   *
+   * @param $entity_type_id
+   *   The entity type ID.
+   */
   public function __construct(EntityTypeManager $entity_type_manager, $entity_type_id) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityTypeId = $entity_type_id;
@@ -52,4 +63,5 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
     $cloned_entity->save();
     return $cloned_entity;
   }
+
 }

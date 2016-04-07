@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class ConfigEntityCloneBase
+ */
 class ConfigEntityCloneBase implements EntityHandlerInterface, EntityCloneInterface {
 
   /**
@@ -24,6 +27,15 @@ class ConfigEntityCloneBase implements EntityHandlerInterface, EntityCloneInterf
    */
   protected $entityTypeId;
 
+  /**
+   * Constructs a new ConfigEntityCloneBase.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   *   The entity type manager.
+   *
+   * @param $entity_type_id
+   *   The entity type ID.
+   */
   public function __construct(EntityTypeManager $entity_type_manager, $entity_type_id) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityTypeId = $entity_type_id;
@@ -50,7 +62,7 @@ class ConfigEntityCloneBase implements EntityHandlerInterface, EntityCloneInterf
 
     $cloned_entity = $entity->createDuplicate();
 
-    // Set new entity properties
+    // Set new entity properties.
     if (isset($properties['id'])) {
       if ($id_key) {
         $cloned_entity->set($id_key, $properties['id']);
@@ -66,11 +78,12 @@ class ConfigEntityCloneBase implements EntityHandlerInterface, EntityCloneInterf
     }
 
     foreach ($properties as $key => $property) {
-        $cloned_entity->set($key, $property);
+      $cloned_entity->set($key, $property);
     }
 
     $cloned_entity->save();
     return $cloned_entity;
 
   }
+
 }

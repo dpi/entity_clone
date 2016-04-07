@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\entity_clone\EntityClonePermissions.
- */
-
 namespace Drupal\entity_clone;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -36,7 +31,10 @@ class EntityClonePermissions implements ContainerInjectionInterface {
    * Constructs a new EntityClonePermissions instance.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
+   *   The entity type manager.
+   *
    * @param \Drupal\Core\StringTranslation\TranslationManager $string_translation
+   *   The string translation manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_manager, TranslationManager $string_translation) {
     $this->entityTypeManager = $entity_manager;
@@ -64,7 +62,7 @@ class EntityClonePermissions implements ContainerInjectionInterface {
 
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
       $permissions['clone ' . $entity_type_id . ' entity'] = $this->translationManager->translate('Clone all <em>@label</em> entities', [
-        '@label' => $entity_type->getLabel()
+        '@label' => $entity_type->getLabel(),
       ]);
     }
 

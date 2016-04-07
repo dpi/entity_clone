@@ -10,6 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslationManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class ConfigEntityCloneFormBase
+ */
 class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFormInterface {
 
   /**
@@ -21,6 +24,15 @@ class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFo
 
   protected $entityTypeManager;
 
+  /**
+   * Constructs a new ConfigEntityCloneFormBase.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   *   The entity type manager.
+   *
+   * @param \Drupal\Core\StringTranslation\TranslationManager $translation_manager
+   *   The string translation manager.
+   */
   public function __construct(EntityTypeManager $entity_type_manager, TranslationManager $translation_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->translationManager = $translation_manager;
@@ -58,7 +70,8 @@ class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFo
       '#required' => TRUE,
     );
 
-    // If entity must have a prefix (e.g. entity_form_mode, entity_view_mode, ...)
+    // If entity must have a prefix
+    // (e.g. entity_form_mode, entity_view_mode, ...).
     if (method_exists($entity, 'getTargetType')) {
       $form['id']['#field_prefix'] = $entity->getTargetType() . '.';
     }
@@ -72,10 +85,14 @@ class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFo
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getNewValues(FormStateInterface $form_state) {
     return [
       'id' => $form_state->getValue('id'),
       'label' => $form_state->getValue('label'),
     ];
   }
+
 }
