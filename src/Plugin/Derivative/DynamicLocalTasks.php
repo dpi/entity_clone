@@ -59,7 +59,7 @@ class DynamicLocalTasks extends DeriverBase implements ContainerDeriverInterface
     /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
       $has_clone_path = $entity_type->hasLinkTemplate('clone-form');
-      $has_canonical_path = $entity_type->hasLinkTemplate('devel-render');
+      $has_canonical_path = $entity_type->hasLinkTemplate('canonical');
 
       if ($has_clone_path) {
         $this->derivatives["$entity_type_id.clone_tab"] = array(
