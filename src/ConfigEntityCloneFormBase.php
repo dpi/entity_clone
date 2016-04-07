@@ -88,8 +88,15 @@ class ConfigEntityCloneFormBase implements EntityHandlerInterface, EntityCloneFo
    * {@inheritdoc}
    */
   public function getNewValues(FormStateInterface $form_state) {
+    // If entity must have a prefix
+    // (e.g. entity_form_mode, entity_view_mode, ...).
+    $field_prefix = '';
+    if (isset($form_state->getCompleteForm()['id']['#field_prefix'])) {
+      $field_prefix = $form_state->getCompleteForm()['id']['#field_prefix'];
+    }
+
     return [
-      'id' => $form_state->getValue('id'),
+      'id' => $field_prefix . $form_state->getValue('id'),
       'label' => $form_state->getValue('label'),
     ];
   }

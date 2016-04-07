@@ -133,13 +133,13 @@ class EntityCloneForm extends FormBase {
     }
 
     $properties = [];
-    if ($entity_clone_form_handler) {
+    if (isset($entity_clone_form_handler) && $entity_clone_form_handler) {
       $properties = $entity_clone_form_handler->getNewValues($form_state);
     }
 
     $cloned_entity = $entity_clone_handler->cloneEntity($this->entity, $properties);
 
-    if ($cloned_entity) {
+    if ($cloned_entity && $cloned_entity->hasLinkTemplate('canonical')) {
       $form_state->setRedirect($cloned_entity->toUrl()
         ->getRouteName(), $cloned_entity->toUrl()->getRouteParameters());
     }
