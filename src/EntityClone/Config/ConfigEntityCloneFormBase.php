@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_clone;
+namespace Drupal\entity_clone\EntityClone\Config;
 
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslationManager;
+use Drupal\entity_clone\EntityClone\EntityCloneFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

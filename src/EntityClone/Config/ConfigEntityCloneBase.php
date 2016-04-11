@@ -1,11 +1,12 @@
 <?php
 
-namespace Drupal\entity_clone;
+namespace Drupal\entity_clone\EntityClone\Config;
 
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\entity_clone\EntityClone\EntityCloneInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -53,13 +54,9 @@ class ConfigEntityCloneBase implements EntityHandlerInterface, EntityCloneInterf
   /**
    * {@inheritdoc}
    */
-  public function cloneEntity(EntityInterface $entity, $properties = []) {
-
-    /** @var \Drupal\Core\Config\Entity\ConfigEntityBase $cloned_entity */
+  public function cloneEntity(EntityInterface $entity, EntityInterface $cloned_entity, $properties = []) {
     $id_key = $this->entityTypeManager->getDefinition($this->entityTypeId)->getKey('id');
     $label_key = $this->entityTypeManager->getDefinition($this->entityTypeId)->getKey('label');
-
-    $cloned_entity = $entity->createDuplicate();
 
     // Set new entity properties.
     if (isset($properties['id'])) {

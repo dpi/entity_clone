@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_clone;
+namespace Drupal\entity_clone\EntityClone;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;

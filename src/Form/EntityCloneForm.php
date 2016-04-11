@@ -96,7 +96,7 @@ class EntityCloneForm extends FormBase {
         ]),
       ];
 
-      /** @var \Drupal\entity_clone\EntityCloneFormInterface $entity_clone_handler */
+      /** @var \Drupal\entity_clone\EntityClone\EntityCloneFormInterface $entity_clone_handler */
       if ($this->entityTypeManager->hasHandler($this->entityTypeDefinition->id(), 'entity_clone_form')) {
         $entity_clone_form_handler = $this->entityTypeManager->getHandler($this->entityTypeDefinition->id(), 'entity_clone_form');
         $form = array_merge($form, $entity_clone_form_handler->formElement($this->entity));
@@ -126,7 +126,7 @@ class EntityCloneForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\entity_clone\EntityCloneInterface $entity_clone_handler */
+    /** @var \Drupal\entity_clone\EntityClone\EntityCloneInterface $entity_clone_handler */
     $entity_clone_handler = $this->entityTypeManager->getHandler($this->entityTypeDefinition->id(), 'entity_clone');
     if ($this->entityTypeManager->hasHandler($this->entityTypeDefinition->id(), 'entity_clone_form')) {
       $entity_clone_form_handler = $this->entityTypeManager->getHandler($this->entityTypeDefinition->id(), 'entity_clone_form');
@@ -137,12 +137,20 @@ class EntityCloneForm extends FormBase {
       $properties = $entity_clone_form_handler->getNewValues($form_state);
     }
 
-    $cloned_entity = $entity_clone_handler->cloneEntity($this->entity, $properties);
+    $cloned_entity = $entity_clone_handler->cloneEntity($this->entity, $this->entity->createDuplicate(), $properties);
+
+    drupal_set_message($this->stringTranslationManager->translate('The entity <em>@entity (@entity_id)</em> of type <em>@type</em> was cloned', [
+      '@entity' => $this->entity->label(),
+      '@entity_id' => $this->entity->id(),
+      '@type' => $this->entity->getEntityTypeId(),
+    ]));
 
     if ($cloned_entity && $cloned_entity->hasLinkTemplate('canonical')) {
       $form_state->setRedirect($cloned_entity->toUrl()
         ->getRouteName(), $cloned_entity->toUrl()->getRouteParameters());
     }
+
+    $form_state->setRedirect('<front>');
   }
 
   /**
