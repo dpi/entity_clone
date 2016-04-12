@@ -55,6 +55,7 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
    * {@inheritdoc}
    */
   public function cloneEntity(EntityInterface $entity, EntityInterface $cloned_entity, $properties = []) {
+    /** @var \Drupal\core\Entity\ContentEntityInterface $cloned_entity */
     if ($label_key = $this->entityTypeManager->getDefinition($this->entityTypeId)->getKey('label')) {
       $cloned_entity->set($label_key, $entity->label() . ' - Cloned');
     }

@@ -1,9 +1,8 @@
 <?php
 
-namespace Drupal\entity_clone\EntityClone\Content\File;
+namespace Drupal\entity_clone\EntityClone\Content;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\entity_clone\EntityClone\Content\ContentEntityCloneBase;
 
 /**
  * Class ContentEntityCloneBase.
