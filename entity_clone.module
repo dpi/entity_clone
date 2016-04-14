@@ -39,12 +39,23 @@ function entity_clone_entity_type_build(array &$entity_types) {
     'user' => [
       'entity_clone' => '\Drupal\entity_clone\EntityClone\Content\UserEntityClone',
     ],
+    'field_config' => [
+      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\FieldConfigEntityClone',
+      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+    ],
+    'node_type' => [
+      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
+      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+    ],
   ];
 
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   foreach ($entity_types as &$entity_type) {
     if (isset($specific_handler[$entity_type->id()])) {
       $entity_type->setHandlerClass('entity_clone', $specific_handler[$entity_type->id()]['entity_clone']);
+      if (isset($specific_handler[$entity_type->id()]['entity_clone_form'])) {
+        $entity_type->setHandlerClass('entity_clone_form', $specific_handler[$entity_type->id()]['entity_clone_form']);
+      }
     }
     elseif (!$entity_type->getHandlerClass('entity_clone') && $entity_type instanceof ContentEntityTypeInterface) {
       $entity_type->setHandlerClass('entity_clone', '\Drupal\entity_clone\EntityClone\Content\ContentEntityCloneBase');
