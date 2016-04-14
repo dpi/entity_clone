@@ -55,6 +55,10 @@ function entity_clone_entity_type_build(array &$entity_types) {
       'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
       'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
     ],
+    'contact_form' => [
+      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
+      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+    ],
   ];
 
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
