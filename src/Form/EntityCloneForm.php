@@ -2,10 +2,10 @@
 
 namespace Drupal\entity_clone\Form;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\Entity;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslationManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -65,7 +65,6 @@ class EntityCloneForm extends FormBase {
     $this->entityTypeDefinition = $entity_type_manager->getDefinition($this->entity->getEntityTypeId());
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -110,7 +109,7 @@ class EntityCloneForm extends FormBase {
       $form['abort'] = [
         '#type' => 'submit',
         '#value' => 'Abort',
-        '#submit' => '::cancelForm',
+        '#submit' => ['::cancelForm'],
       ];
     }
 
@@ -145,12 +144,7 @@ class EntityCloneForm extends FormBase {
       '@type' => $this->entity->getEntityTypeId(),
     ]));
 
-    if ($cloned_entity && $cloned_entity->hasLinkTemplate('canonical')) {
-      $form_state->setRedirect($cloned_entity->toUrl()
-        ->getRouteName(), $cloned_entity->toUrl()->getRouteParameters());
-    }
-
-    $form_state->setRedirect('<front>');
+    $this->formSetRedirect($form_state, $cloned_entity);
   }
 
   /**
@@ -162,7 +156,24 @@ class EntityCloneForm extends FormBase {
    *   The current state of the form.
    */
   public function cancelForm(array &$form, FormStateInterface $form_state) {
-    $form_state->setRedirect('<front>');
+    $this->formSetRedirect($form_state, $this->entity);
+  }
+
+  /**
+   * Set a redirect on form state.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The cloned entity.
+   */
+  protected function formSetRedirect(FormStateInterface $form_state, EntityInterface $entity) {
+    if ($entity && $entity->hasLinkTemplate('canonical')) {
+      $form_state->setRedirect($entity->toUrl()->getRouteName(), $entity->toUrl()->getRouteParameters());
+    }
+    else {
+      $form_state->setRedirect('<front>');
+    }
   }
 
 }
