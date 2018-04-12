@@ -9,6 +9,15 @@ use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
+use Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneBase;
+use Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase;
+use Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone;
+use Drupal\entity_clone\EntityClone\Config\FieldConfigEntityClone;
+use Drupal\entity_clone\EntityClone\Content\ContentEntityCloneBase;
+use Drupal\entity_clone\EntityClone\Content\ContentEntityCloneFormBase;
+use Drupal\entity_clone\EntityClone\Content\FileEntityClone;
+use Drupal\entity_clone\EntityClone\Content\TaxonomyTermEntityClone;
+use Drupal\entity_clone\EntityClone\Content\UserEntityClone;
 
 /**
  * Implements hook_help().
@@ -29,35 +38,41 @@ function entity_clone_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_entity_info_alter().
+ * Implements hook_entity_type_build().
  */
 function entity_clone_entity_type_build(array &$entity_types) {
   $specific_handler = [
     'file' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Content\FileEntityClone',
+      'entity_clone' => FileEntityClone::class,
+      'entity_clone_form' => ContentEntityCloneFormBase::class,
     ],
     'user' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Content\UserEntityClone',
+      'entity_clone' => UserEntityClone::class,
+      'entity_clone_form' => ContentEntityCloneFormBase::class,
     ],
     'field_config' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\FieldConfigEntityClone',
-      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+      'entity_clone' => FieldConfigEntityClone::class,
+      'entity_clone_form' => ConfigEntityCloneFormBase::class,
     ],
     'node_type' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
-      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+      'entity_clone' => ConfigWithFieldEntityClone::class,
+      'entity_clone_form' => ConfigEntityCloneFormBase::class,
     ],
     'comment_type' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
-      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+      'entity_clone' => ConfigWithFieldEntityClone::class,
+      'entity_clone_form' => ConfigEntityCloneFormBase::class,
     ],
     'block_content_type' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
-      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+      'entity_clone' => ConfigWithFieldEntityClone::class,
+      'entity_clone_form' => ConfigEntityCloneFormBase::class,
     ],
     'contact_form' => [
-      'entity_clone' => '\Drupal\entity_clone\EntityClone\Config\ConfigWithFieldEntityClone',
-      'entity_clone_form' => '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase',
+      'entity_clone' => ConfigWithFieldEntityClone::class,
+      'entity_clone_form' => ConfigEntityCloneFormBase::class,
+    ],
+    'taxonomy_term' => [
+      'entity_clone' => TaxonomyTermEntityClone::class,
+      'entity_clone_form' => ContentEntityCloneFormBase::class,
     ],
   ];
 
@@ -70,11 +85,12 @@ function entity_clone_entity_type_build(array &$entity_types) {
       }
     }
     elseif (!$entity_type->getHandlerClass('entity_clone') && $entity_type instanceof ContentEntityTypeInterface) {
-      $entity_type->setHandlerClass('entity_clone', '\Drupal\entity_clone\EntityClone\Content\ContentEntityCloneBase');
+      $entity_type->setHandlerClass('entity_clone', ContentEntityCloneBase::class);
+      $entity_type->setHandlerClass('entity_clone_form', ContentEntityCloneFormBase::class);
     }
     elseif (!$entity_type->getHandlerClass('entity_clone') && $entity_type instanceof ConfigEntityTypeInterface) {
-      $entity_type->setHandlerClass('entity_clone', '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneBase');
-      $entity_type->setHandlerClass('entity_clone_form', '\Drupal\entity_clone\EntityClone\Config\ConfigEntityCloneFormBase');
+      $entity_type->setHandlerClass('entity_clone', ConfigEntityCloneBase::class);
+      $entity_type->setHandlerClass('entity_clone_form', ConfigEntityCloneFormBase::class);
     }
   }
 }
@@ -109,6 +125,7 @@ function entity_clone_entity_operation(EntityInterface $entity) {
  * Implements hook_entity_type_alter().
  */
 function entity_clone_entity_type_alter(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityType[] $entity_types */
   foreach ($entity_types as $entity_type_id => $entity_type) {
     $entity_type->setLinkTemplate('clone-form', "/entity_clone/$entity_type_id/{{$entity_type_id}}");
   }

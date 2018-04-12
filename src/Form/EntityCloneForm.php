@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslationManager;
 use Drupal\entity_clone\Event\EntityCloneEvent;
@@ -102,12 +103,6 @@ class EntityCloneForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     if ($this->entity && $this->entityTypeDefinition->hasHandlerClass('entity_clone')) {
-      $form['information'] = [
-        '#markup' => $this->stringTranslationManager->translate('<p>Do you want clone the <em>@entity_type</em> entity named <em>@title</em>?</p>', [
-          '@entity_type' => $this->entity->getEntityType()->getLabel(),
-          '@title' => $this->entity->label(),
-        ]),
-      ];
 
       /** @var \Drupal\entity_clone\EntityClone\EntityCloneFormInterface $entity_clone_handler */
       if ($this->entityTypeManager->hasHandler($this->entityTypeDefinition->id(), 'entity_clone_form')) {
@@ -147,7 +142,7 @@ class EntityCloneForm extends FormBase {
 
     $properties = [];
     if (isset($entity_clone_form_handler) && $entity_clone_form_handler) {
-      $properties = $entity_clone_form_handler->getNewValues($form_state);
+      $properties = $entity_clone_form_handler->getValues($form_state);
     }
 
     $duplicate = $this->entity->createDuplicate();
