@@ -189,4 +189,14 @@ class EntityCloneForm extends FormBase {
     }
   }
 
+  /**
+   * Gets the entity of this form.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The entity.
+   */
+  public function getEntity() {
+    return $this->entity;
+  }
+
 }
