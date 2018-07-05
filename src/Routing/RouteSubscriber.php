@@ -60,9 +60,7 @@ class RouteSubscriber extends RouteSubscriberBase {
           '_form' => '\Drupal\entity_clone\Form\EntityCloneForm',
           '_title' => 'Clone ' . $entity_type->getLabel(),
         ])
-        ->addRequirements([
-          '_permission' => 'clone ' . $entity_type->id() . ' entity',
-        ])
+        ->setRequirement('_entity_access', $entity_type_id . '.clone')
         ->setOption('_entity_clone_entity_type_id', $entity_type_id)
         ->setOption('_admin_route', TRUE)
         ->setOption('parameters', [

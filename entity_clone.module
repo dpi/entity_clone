@@ -5,6 +5,7 @@
  * Contains entity_clone.module.
  */
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -18,6 +19,7 @@ use Drupal\entity_clone\EntityClone\Content\ContentEntityCloneFormBase;
 use Drupal\entity_clone\EntityClone\Content\FileEntityClone;
 use Drupal\entity_clone\EntityClone\Content\TaxonomyTermEntityClone;
 use Drupal\entity_clone\EntityClone\Content\UserEntityClone;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_help().
@@ -35,6 +37,16 @@ function entity_clone_help($route_name, RouteMatchInterface $route_match) {
       return;
 
   }
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function entity_clone_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($operation === 'clone') {
+    return AccessResult::allowedIfHasPermission($account, 'clone ' . $entity->getEntityTypeId() . ' entity');
+  }
+  return AccessResult::neutral();
 }
 
 /**
@@ -108,7 +120,7 @@ function entity_clone_entity_type_build(array &$entity_types) {
  * @see \Drupal\Core\Entity\EntityListBuilderInterface::getOperations()
  */
 function entity_clone_entity_operation(EntityInterface $entity) {
-  if ($entity->hasLinkTemplate('clone-form')) {
+  if ($entity->hasLinkTemplate('clone-form') && $entity->access('clone')) {
     return [
       'clone' => [
         'title' => t('Clone'),
