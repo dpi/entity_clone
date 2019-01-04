@@ -2,29 +2,23 @@
 
 /**
  * @file
- * Contains entity_clone.install.
+ * Contains entity_clone.post_update.php.
  */
-
 
 /**
- * Implements hook_update_N().
+ * Populates new entity_clone form settings.
  */
-function entity_clone_update_8001() {
+function entity_clone_post_update_populate_form_settings() {
   /** @var \Drupal\entity_clone\EntityCloneSettingsManager $entity_clone_settings_manager */
   $entity_clone_settings_manager = \Drupal::service('entity_clone.settings.manager');
-  $config = \Drupal::configFactory()->getEditable('entity_clone.settings');
-
   $form_settings = [];
   foreach (array_keys($entity_clone_settings_manager->getContentEntityTypes()) as $entity_type_id) {
     $form_settings[$entity_type_id] = [
       'default_value' => FALSE,
       'disable' => FALSE,
-      'hidden' => false,
+      'hidden' => FALSE,
     ];
   }
 
-  $config->set('form_settings', $form_settings)
-    ->save();
-
-  drupal_flush_all_caches();
+  \Drupal::configFactory()->getEditable('entity_clone.settings')->set('form_settings', $form_settings)->save();
 }
