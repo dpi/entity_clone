@@ -46,6 +46,13 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
   protected $entityCloneSettingsManager;
 
   /**
+   * Entities we've found while cloning.
+   *
+   * @var \Drupal\Core\Entity\ContentEntityInterface[]
+   */
+  protected $discovered_entities = [];
+
+  /**
    * Constructs a new ContentEntityCloneFormBase.
    *
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
@@ -204,11 +211,21 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
    *   The list of children.
    */
   protected function getChildren(ContentEntityInterface $referenced_entity) {
+    // Use memoization to prevent circular references.
+    if (array_key_exists($referenced_entity->id(), $this->discovered_entities)) {
+      return;
+    }
+
     /** @var \Drupal\entity_clone\EntityClone\EntityCloneFormInterface $entity_clone_handler */
     if ($this->entityTypeManager->hasHandler($referenced_entity->getEntityTypeId(), 'entity_clone_form')) {
+      // Record that we've found this entity.
+      $this->discovered_entities[$referenced_entity->id()] = $referenced_entity;
+
       $entity_clone_form_handler = $this->entityTypeManager->getHandler($referenced_entity->getEntityTypeId(), 'entity_clone_form');
       return $entity_clone_form_handler->formElement($referenced_entity, FALSE);
     }
+
+    return;
   }
 
   /**
