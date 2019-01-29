@@ -109,7 +109,7 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
    */
   protected function setClonedEntityLabel(EntityInterface $original_entity, EntityInterface $cloned_entity) {
     $label_key = $this->entityTypeManager->getDefinition($this->entityTypeId)->getKey('label');
-    if ($label_key) {
+    if ($label_key && $cloned_entity->hasField($label_key)) {
       $cloned_entity->set($label_key, $original_entity->label() . ' - Cloned');
     }
   }
