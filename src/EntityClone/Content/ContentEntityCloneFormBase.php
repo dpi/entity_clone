@@ -50,19 +50,23 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
    *
    * @var \Drupal\Core\Entity\ContentEntityInterface[]
    */
-  protected $discovered_entities = [];
+  protected $discoveredEntities = [];
 
   /**
    * Constructs a new ContentEntityCloneFormBase.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\StringTranslation\TranslationManager $translation_manager
    *   The string translation manager.
    * @param \Drupal\entity_clone\EntityCloneSettingsManager $entity_clone_settings_manager
    *   The entity clone settings manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, TranslationManager $translation_manager, EntityCloneSettingsManager $entity_clone_settings_manager) {
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    TranslationManager $translation_manager,
+    EntityCloneSettingsManager $entity_clone_settings_manager
+  ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->translationManager = $translation_manager;
     $this->entityCloneSettingsManager = $entity_clone_settings_manager;
@@ -84,7 +88,7 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
    */
   public function formElement(EntityInterface $entity, $parent = TRUE) {
     $form = [
-      'recursive' => []
+      'recursive' => [],
     ];
 
     if ($entity instanceof FieldableEntityInterface) {
@@ -158,7 +162,8 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
     ];
 
     foreach ($field as $value) {
-      // Check if we're not dealing with an entity that has been deleted in the meantime
+      // Check if we're not dealing with an entity
+      // That has been deleted in the meantime.
       if (!$referenced_entity = $value->get('entity')->getTarget()) {
         continue;
       }
@@ -193,7 +198,7 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
         '#type' => 'hidden',
         '#value' => $referenced_entity->bundle(),
       ];
-      if ($referenced_entity instanceOf ContentEntityInterface) {
+      if ($referenced_entity instanceof ContentEntityInterface) {
         $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['children'] = $this->getChildren($referenced_entity);
       }
     }
@@ -212,20 +217,20 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
    */
   protected function getChildren(ContentEntityInterface $referenced_entity) {
     // Use memoization to prevent circular references.
-    if (array_key_exists($referenced_entity->id(), $this->discovered_entities)) {
-      return;
+    if (array_key_exists($referenced_entity->id(), $this->discoveredEntities)) {
+      return [];
     }
 
     /** @var \Drupal\entity_clone\EntityClone\EntityCloneFormInterface $entity_clone_handler */
     if ($this->entityTypeManager->hasHandler($referenced_entity->getEntityTypeId(), 'entity_clone_form')) {
       // Record that we've found this entity.
-      $this->discovered_entities[$referenced_entity->id()] = $referenced_entity;
+      $this->discoveredEntities[$referenced_entity->id()] = $referenced_entity;
 
       $entity_clone_form_handler = $this->entityTypeManager->getHandler($referenced_entity->getEntityTypeId(), 'entity_clone_form');
       return $entity_clone_form_handler->formElement($referenced_entity, FALSE);
     }
 
-    return;
+    return [];
   }
 
   /**

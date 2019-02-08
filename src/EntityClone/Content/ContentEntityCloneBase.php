@@ -130,7 +130,8 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
   protected function cloneReferencedEntities(FieldItemListInterface $field, FieldConfigInterface $field_definition, array $properties) {
     $referenced_entities = [];
     foreach ($field as $value) {
-      // Check if we're not dealing with an entity that has been deleted in the meantime
+      // Check if we're not dealing with an entity
+      // that has been deleted in the meantime.
       if (!$referenced_entity = $value->get('entity')->getTarget()) {
         continue;
       }
