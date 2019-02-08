@@ -112,12 +112,12 @@ class EntityCloneForm extends FormBase {
 
       $form['clone'] = [
         '#type' => 'submit',
-        '#value' => 'Clone',
+        '#value' => $this->stringTranslationManager->translate('Clone'),
       ];
 
       $form['abort'] = [
         '#type' => 'submit',
-        '#value' => 'Abort',
+        '#value' => $this->stringTranslationManager->translate('Abort'),
         '#submit' => ['::cancelForm'],
       ];
     }
