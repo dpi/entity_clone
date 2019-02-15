@@ -77,7 +77,9 @@ function entity_clone_entity_type_build(array &$entity_types) {
   ];
 
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
-  foreach ($entity_types as &$entity_type) {
+  foreach ($entity_types as $entity_type_id => $entity_type) {
+    $entity_type->setLinkTemplate('clone-form', "/entity_clone/$entity_type_id/{{$entity_type_id}}");
+
     if (isset($specific_handler[$entity_type->id()])) {
       $entity_type->setHandlerClass('entity_clone', $specific_handler[$entity_type->id()]['entity_clone']);
       if (isset($specific_handler[$entity_type->id()]['entity_clone_form'])) {
@@ -119,14 +121,4 @@ function entity_clone_entity_operation(EntityInterface $entity) {
   }
 
   return [];
-}
-
-/**
- * Implements hook_entity_type_alter().
- */
-function entity_clone_entity_type_alter(array &$entity_types) {
-  /** @var \Drupal\Core\Entity\EntityType[] $entity_types */
-  foreach ($entity_types as $entity_type_id => $entity_type) {
-    $entity_type->setLinkTemplate('clone-form', "/entity_clone/$entity_type_id/{{$entity_type_id}}");
-  }
 }
