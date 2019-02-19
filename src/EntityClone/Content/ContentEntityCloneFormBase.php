@@ -86,18 +86,19 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
   /**
    * {@inheritdoc}
    */
-  public function formElement(EntityInterface $entity, $parent = TRUE) {
+  public function formElement(EntityInterface $entity, $parent = TRUE, &$discovered_entities = []) {
     $form = [
       'recursive' => [],
     ];
 
     if ($entity instanceof FieldableEntityInterface) {
+      $discovered_entities[$entity->getEntityTypeId()][$entity->id()] = $entity;
       foreach ($entity->getFieldDefinitions() as $field_id => $field_definition) {
         if ($field_definition instanceof FieldConfigInterface && in_array($field_definition->getType(), ['entity_reference', 'entity_reference_revisions'], TRUE)) {
           $field = $entity->get($field_id);
           /** @var \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem $value */
           if ($field->count() > 0) {
-            $form['recursive'] = array_merge($form['recursive'], $this->getRecursiveFormElement($field_definition, $field_id, $field));
+            $form['recursive'] = array_merge($form['recursive'], $this->getRecursiveFormElement($field_definition, $field_id, $field, $discovered_entities));
           }
         }
       }
@@ -141,11 +142,13 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
    *   The field ID.
    * @param \Drupal\Core\Field\FieldItemListInterface $field
    *   The field item.
+   * @param array $discovered_entities
+   *   List of all entities already discovered.
    *
    * @return array
    *   The form element for a recursive clone.
    */
-  protected function getRecursiveFormElement(FieldConfigInterface $field_definition, $field_id, FieldItemListInterface $field) {
+  protected function getRecursiveFormElement(FieldConfigInterface $field_definition, $field_id, FieldItemListInterface $field, array &$discovered_entities) {
     $form_element = [
       '#tree' => TRUE,
     ];
@@ -170,36 +173,48 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
       /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
       $referenced_entity = $value->get('entity')->getTarget()->getValue();
 
-      $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Clone entity <strong>ID:</strong> <em>@entity_id</em>, <strong>Type:</strong> <em>@entity_type - @bundle</em>, <strong>Label:</strong> <em>@entity_label</em>', [
-          '@entity_id' => $referenced_entity->id(),
-          '@entity_type' => $referenced_entity->getEntityTypeId(),
-          '@bundle' => $referenced_entity->bundle(),
-          '@entity_label' => $referenced_entity->label(),
-        ]),
-        '#default_value' => $this->entityCloneSettingsManager->getDefaultValue($referenced_entity->getEntityTypeId()),
-        '#access' => $referenced_entity->access('view label'),
-      ];
-
-      if ($this->entityCloneSettingsManager->getDisableValue($referenced_entity->getEntityTypeId())) {
-        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#attributes'] = [
-          'disabled' => TRUE,
+      if (isset($discovered_entities[$referenced_entity->getEntityTypeId()]) && array_key_exists($referenced_entity->id(), $discovered_entities[$referenced_entity->getEntityTypeId()])) {
+        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['is_circular'] = [
+          '#type' => 'hidden',
+          '#value' => TRUE,
         ];
-        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#value'] = $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#default_value'];
+        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['circular'] = [
+          '#type' => 'item',
+          '#markup' => 'Circular reference detected',
+        ];
       }
+      else {
+        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Clone entity <strong>ID:</strong> <em>@entity_id</em>, <strong>Type:</strong> <em>@entity_type - @bundle</em>, <strong>Label:</strong> <em>@entity_label</em>', [
+            '@entity_id' => $referenced_entity->id(),
+            '@entity_type' => $referenced_entity->getEntityTypeId(),
+            '@bundle' => $referenced_entity->bundle(),
+            '@entity_label' => $referenced_entity->label(),
+          ]),
+          '#default_value' => $this->entityCloneSettingsManager->getDefaultValue($referenced_entity->getEntityTypeId()),
+          '#access' => $referenced_entity->access('view label'),
+        ];
 
-      $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['target_entity_type_id'] = [
-        '#type' => 'hidden',
-        '#value' => $referenced_entity->getEntityTypeId(),
-      ];
+        if ($this->entityCloneSettingsManager->getDisableValue($referenced_entity->getEntityTypeId())) {
+          $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#attributes'] = [
+            'disabled' => TRUE,
+          ];
+          $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#value'] = $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#default_value'];
+        }
 
-      $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['target_bundle'] = [
-        '#type' => 'hidden',
-        '#value' => $referenced_entity->bundle(),
-      ];
-      if ($referenced_entity instanceof ContentEntityInterface) {
-        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['children'] = $this->getChildren($referenced_entity);
+        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['target_entity_type_id'] = [
+          '#type' => 'hidden',
+          '#value' => $referenced_entity->getEntityTypeId(),
+        ];
+
+        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['target_bundle'] = [
+          '#type' => 'hidden',
+          '#value' => $referenced_entity->bundle(),
+        ];
+        if ($referenced_entity instanceof ContentEntityInterface) {
+          $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['children'] = $this->getChildren($referenced_entity, $discovered_entities);
+        }
       }
     }
 
@@ -211,23 +226,20 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $referenced_entity
    *   The field item list.
+   * @param array $discovered_entities
+   *   List of all entities already discovered.
    *
    * @return array
    *   The list of children.
    */
-  protected function getChildren(ContentEntityInterface $referenced_entity) {
-    // Use memoization to prevent circular references.
-    if (array_key_exists($referenced_entity->id(), $this->discoveredEntities)) {
-      return [];
-    }
-
+  protected function getChildren(ContentEntityInterface $referenced_entity, array &$discovered_entities) {
     /** @var \Drupal\entity_clone\EntityClone\EntityCloneFormInterface $entity_clone_handler */
     if ($this->entityTypeManager->hasHandler($referenced_entity->getEntityTypeId(), 'entity_clone_form')) {
       // Record that we've found this entity.
-      $this->discoveredEntities[$referenced_entity->id()] = $referenced_entity;
+      $discovered_entities[$referenced_entity->getEntityTypeId()][$referenced_entity->id()] = $referenced_entity;
 
       $entity_clone_form_handler = $this->entityTypeManager->getHandler($referenced_entity->getEntityTypeId(), 'entity_clone_form');
-      return $entity_clone_form_handler->formElement($referenced_entity, FALSE);
+      return $entity_clone_form_handler->formElement($referenced_entity, FALSE, $discovered_entities);
     }
 
     return [];
