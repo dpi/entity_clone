@@ -160,7 +160,7 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
         ];
         $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['circular'] = [
           '#type' => 'item',
-          '#markup' => 'Circular reference detected',
+          '#markup' => $this->translationManager->translate('Circular reference detected'),
         ];
       }
       else {
