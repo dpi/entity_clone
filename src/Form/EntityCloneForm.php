@@ -162,7 +162,7 @@ class EntityCloneForm extends FormBase {
     $cloned_entity = $entity_clone_handler->cloneEntity($this->entity, $duplicate, $properties);
     $this->eventDispatcher->dispatch(EntityCloneEvents::POST_CLONE, new EntityCloneEvent($this->entity, $duplicate, $properties));
 
-    $this->messenger->addMessage($this->stringTranslationManager->translate('The entity <em>@entity (@entity_id)</em> of type <em>@type</em> was cloned', [
+    $this->messenger->addMessage($this->stringTranslationManager->translate('The entity <em>@entity (@entity_id)</em> of type <em>@type</em> was cloned.', [
       '@entity' => $this->entity->label(),
       '@entity_id' => $this->entity->id(),
       '@type' => $this->entity->getEntityTypeId(),
