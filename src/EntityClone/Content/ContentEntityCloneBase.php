@@ -151,7 +151,7 @@ class ContentEntityCloneBase implements EntityHandlerInterface, EntityCloneInter
 
         $referenced_entities[] = $cloned_reference;
       }
-      elseif ($child_properties['is_circular']) {
+      elseif (!empty($child_properties['is_circular'])) {
         $referenced_entities[] = $already_cloned[$referenced_entity->getEntityTypeId()][$referenced_entity->id()];
       }
       else {
