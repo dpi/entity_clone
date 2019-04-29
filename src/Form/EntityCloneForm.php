@@ -121,12 +121,14 @@ class EntityCloneForm extends FormBase {
         $form = array_merge($form, $entity_clone_form_handler->formElement($this->entity));
       }
 
-      $form['clone'] = [
+      $form['actions'] = ['#type' => 'actions'];
+      $form['actions']['clone'] = [
         '#type' => 'submit',
+        '#button_type' => 'primary',
         '#value' => $this->stringTranslationManager->translate('Clone'),
       ];
 
-      $form['abort'] = [
+      $form['actions']['abort'] = [
         '#type' => 'submit',
         '#value' => $this->stringTranslationManager->translate('Abort'),
         '#submit' => ['::cancelForm'],
